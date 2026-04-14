@@ -84,7 +84,7 @@ export function Footer() {
             <p className="text-sm text-slate-300 mb-2">
               <strong className="text-red-400">ANTI-ILLEGAL RECRUITMENT WARNING:</strong> Illegal recruitment is a crime punishable by law. Do not deal with unlicensed recruiters or individuals.
             </p>
-            <a href="https://dmw.gov.ph/licensed-agencies" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 underline">
+            <a href="https://dmw.gov.ph/inquiry/licensed-recruitment-agencies" target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 underline">
               Verify our license at the official DMW 'Verification of Licensed Agencies' Portal
             </a>
           </div>
