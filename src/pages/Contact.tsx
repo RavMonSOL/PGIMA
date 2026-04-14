@@ -77,15 +77,28 @@ export function Contact() {
                 </div>
               </div>
 
-              {/* Map Placeholder */}
-              <div className="mt-12 w-full h-64 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden relative">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-slate-950/80 backdrop-blur-sm px-6 py-3 rounded-lg border border-slate-800 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-blue-500" />
-                    <span className="text-white font-medium">View on Google Maps</span>
-                  </div>
-                </div>
+              {/* Map */}
+              <div className="mt-12 w-full h-80 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden relative">
+                <iframe 
+                  src="https://maps.google.com/maps?q=Padre%20Faura%20Center,%20472%20P.%20Faura%20St,%20Ermita,%20Manila&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                  width="100%" 
+                  height="100%" 
+                  style={{ border: 0 }} 
+                  allowFullScreen 
+                  loading="lazy" 
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Prime Goal Office Location"
+                  className="absolute inset-0 grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
+                ></iframe>
+                <a 
+                  href="https://maps.app.goo.gl/ZPV4bhWro6e1Rauq6" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute bottom-4 left-4 bg-slate-950/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-800 flex items-center gap-2 hover:bg-blue-600 transition-colors group z-10"
+                >
+                  <MapPin className="w-4 h-4 text-blue-500 group-hover:text-white" />
+                  <span className="text-sm text-white font-medium">Get Directions</span>
+                </a>
               </div>
             </div>
 

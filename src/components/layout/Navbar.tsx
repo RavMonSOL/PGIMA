@@ -43,7 +43,7 @@ export function Navbar() {
       <div className="bg-red-600 text-white text-xs py-2 px-4 text-center font-medium flex flex-col sm:flex-row items-center justify-center gap-2 w-full">
         <span>⚠️ <strong>ANTI-SCAM ALERT:</strong> We do NOT collect fees via GCash or Maya.</span>
         <span className="hidden sm:inline">|</span>
-        <span>Official Socials: <a href="#" className="underline hover:text-red-200">Facebook</a></span>
+        <span>Official Socials: <a href="https://www.facebook.com/modelopremiumcollections" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-200">Facebook</a></span>
       </div>
       <div className={cn("container mx-auto px-4 md:px-6 transition-all duration-300", isScrolled ? "py-3" : "py-5")}>
         <div className="flex items-center justify-between">

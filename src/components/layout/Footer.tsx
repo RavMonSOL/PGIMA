@@ -16,7 +16,7 @@ export function Footer() {
               Connecting the right people to the right opportunities. A Top Deploying Agency recognized by the DMW, dedicated to ethical recruitment and transforming lives.
             </p>
             <div className="flex items-center gap-4 pt-2">
-              <a href="#" className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/modelopremiumcollections" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
                 <Facebook className="w-4 h-4" />
               </a>
               <a href="#" className="w-8 h-8 rounded-full bg-slate-900 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-colors">
