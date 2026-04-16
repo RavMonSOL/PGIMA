@@ -131,10 +131,10 @@ export function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Stethoscope className="w-10 h-10" />, name: "Medical & Healthcare", roles: "Nurses, Doctors, Staff" },
-              { icon: <HardHat className="w-10 h-10" />, name: "Engineering & Construction", roles: "Engineers, Laborers" },
-              { icon: <Briefcase className="w-10 h-10" />, name: "Professional Services", roles: "Drivers, Skilled Pros" },
-              { icon: <Building2 className="w-10 h-10" />, name: "Household Services", roles: "Domestic Placements" }
+              { icon: <HeartHandshake className="w-10 h-10" />, name: "Nanny Services", roles: "Childcare Specialists" },
+              { icon: <Briefcase className="w-10 h-10" />, name: "Professional Cooks", roles: "Culinary Experts" },
+              { icon: <Users className="w-10 h-10" />, name: "Lady Drivers", roles: "Personal Transportation" },
+              { icon: <Building2 className="w-10 h-10" />, name: "Domestic Helpers", roles: "Household Management" }
             ].map((industry, i) => (
               <div key={i} className="group relative overflow-hidden rounded-2xl bg-slate-900 border border-slate-800 p-8 hover:bg-slate-800 transition-colors">
                 <div className="text-slate-500 group-hover:text-blue-400 transition-colors mb-6">

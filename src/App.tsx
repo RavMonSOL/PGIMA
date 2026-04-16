@@ -13,26 +13,23 @@ import { SuccessStories } from './pages/SuccessStories';
 import { Contact } from './pages/Contact';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { AuthProvider } from './lib/AuthContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
 
 export default function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path="about" element={<About />} />
-              <Route path="employers" element={<Employers />} />
-              <Route path="applicants" element={<Applicants />} />
-              <Route path="success-stories" element={<SuccessStories />} />
-              <Route path="contact" element={<Contact />} />
-              <Route path="admin" element={<AdminDashboard />} />
-            </Route>
-          </Routes>
-        </Router>
-      </AuthProvider>
-    </ErrorBoundary>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="employers" element={<Employers />} />
+            <Route path="applicants" element={<Applicants />} />
+            <Route path="success-stories" element={<SuccessStories />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="admin" element={<AdminDashboard />} />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }

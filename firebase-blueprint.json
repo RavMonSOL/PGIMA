@@ -7,7 +7,7 @@
       "properties": {
         "title": { "type": "string", "description": "Job title" },
         "location": { "type": "string", "description": "Job location (e.g. Saudi Arabia)" },
-        "category": { "type": "string", "description": "Job category (e.g. Healthcare)" },
+        "category": { "type": "string", "description": "Job category (e.g. Nanny, Cook, Lady Driver, Domestic Helper)" },
         "description": { "type": "string", "description": "Detailed job description" },
         "requirements": { "type": "string", "description": "Job requirements" },
         "salary": { "type": "string", "description": "Salary range or info" },

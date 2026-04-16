@@ -42,12 +42,12 @@ export function Footer() {
 
           {/* Industries */}
           <div>
-            <h3 className="text-white font-semibold mb-6">Industries We Serve</h3>
+            <h3 className="text-white font-semibold mb-6">Services We Provide</h3>
             <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Medical & Healthcare</li>
-              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Engineering & Construction</li>
-              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Professional Services</li>
-              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Household Services</li>
+              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Nanny Services</li>
+              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Professional Cooks</li>
+              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Lady Drivers</li>
+              <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Domestic Helpers</li>
             </ul>
           </div>
 

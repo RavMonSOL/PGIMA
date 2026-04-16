@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Briefcase, Filter, ArrowRight, Loader2, X, Send, Paperclip, CheckCircle } from 'lucide-react';
 import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
@@ -49,7 +49,7 @@ export function Applicants() {
     return () => unsubscribe();
   }, []);
 
-  const categories = ["All", "Healthcare", "Engineering", "Construction", "Hospitality", "Domestic", "Other"];
+  const categories = ["All", "Nanny", "Cook", "Lady Driver", "Domestic Helper"];
 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Users, FileCheck, Shield, Globe2, Loader2, CheckCircle } from 'lucide-react';
 import emailjs from '@emailjs/browser';
@@ -114,10 +114,10 @@ export function Employers() {
               
               <div className="space-y-4">
                 {[
-                  "Medical & Healthcare Professionals",
-                  "Engineering & Construction Experts",
-                  "Professional Drivers & Skilled Trades",
-                  "Dedicated Household Service Workers"
+                  "Experienced Nannies & Childcare",
+                  "Professional Cooks & Culinary Staff",
+                  "Reliable Lady Drivers",
+                  "Dedicated Domestic Helpers"
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <CheckCircle2 className="w-6 h-6 text-emerald-500 shrink-0" />

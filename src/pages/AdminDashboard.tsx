@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
@@ -227,12 +227,10 @@ export function AdminDashboard() {
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all appearance-none"
                     >
                       <option value="">Select...</option>
-                      <option value="Healthcare">Healthcare</option>
-                      <option value="Engineering">Engineering</option>
-                      <option value="Construction">Construction</option>
-                      <option value="Hospitality">Hospitality</option>
-                      <option value="Domestic">Domestic</option>
-                      <option value="Other">Other</option>
+                      <option value="Nanny">Nanny</option>
+                      <option value="Cook">Cook</option>
+                      <option value="Lady Driver">Lady Driver</option>
+                      <option value="Domestic Helper">Domestic Helper</option>
                     </select>
                   </div>
                 </div>
