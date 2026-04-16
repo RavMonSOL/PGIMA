@@ -81,7 +81,7 @@ export function Contact() {
               {/* Map */}
               <div className="mt-12 w-full h-80 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden relative">
                 <iframe 
-                  src="https://maps.google.com/maps?q=P12%20Padre%20Faura%20Center,%20472%20Padre%20Faura%20Cor.%20M.H.%20Del%20Pilar,%20Ermita,%20Manila,%20Philippines&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                  src="https://maps.google.com/maps?q=Prime%20Goal%20International%20Manpower%20Inc&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
@@ -92,7 +92,7 @@ export function Contact() {
                   className="absolute inset-0 grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
                 ></iframe>
                 <a 
-                  href="https://maps.google.com/maps?q=P12%20Padre%20Faura%20Center,%20472%20Padre%20Faura%20Cor.%20M.H.%20Del%20Pilar,%20Ermita,%20Manila,%20Philippines" 
+                  href="https://maps.app.goo.gl/qggjfNjm1CVSeQ16A" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="absolute bottom-4 left-4 bg-slate-950/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-800 flex items-center gap-2 hover:bg-blue-600 transition-colors group z-10"
