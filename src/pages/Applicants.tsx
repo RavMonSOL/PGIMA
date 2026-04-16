@@ -23,6 +23,7 @@ export function Applicants() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isApplying, setIsApplying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -64,6 +65,12 @@ export function Applicants() {
     
     setIsSubmitting(true);
     setFormError(null);
+
+    if (selectedFile && selectedFile.size > 500 * 1024) {
+      setFormError('File is too large. Please keep it under 500KB.');
+      setIsSubmitting(false);
+      return;
+    }
 
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
     const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
@@ -279,17 +286,45 @@ export function Applicants() {
 
                       <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Resume / CV (PDF or Image)</label>
-                        <div className="relative">
+                        <div className="relative group">
                           <input 
                             name="resume" 
                             required 
                             type="file" 
                             accept=".pdf,image/*"
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files[0]) {
+                                setSelectedFile(e.target.files[0]);
+                              }
+                            }}
                             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
                           />
-                          <div className="w-full bg-slate-950 border border-dashed border-slate-800 rounded-xl px-4 py-6 text-center group-hover:border-blue-500 transition-all">
-                            <Paperclip className="w-6 h-6 text-slate-600 mx-auto mb-2" />
-                            <p className="text-sm text-slate-500">Click to upload or drag and drop</p>
+                          <div className={`w-full bg-slate-950 border border-dashed rounded-xl px-4 py-6 text-center transition-all ${selectedFile ? 'border-blue-500 bg-blue-500/5' : 'border-slate-800 group-hover:border-slate-700'}`}>
+                            {selectedFile ? (
+                              <div className="flex flex-col items-center">
+                                <CheckCircle className="w-6 h-6 text-blue-500 mb-2" />
+                                <p className="text-sm text-white font-medium truncate max-w-full px-4">{selectedFile.name}</p>
+                                <p className="text-xs text-slate-500 mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
+                                <button 
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setSelectedFile(null);
+                                    const input = document.querySelector('input[name="resume"]') as HTMLInputElement;
+                                    if (input) input.value = '';
+                                  }}
+                                  className="mt-3 text-xs text-red-400 hover:text-red-300 font-bold uppercase tracking-tighter relative z-20"
+                                >
+                                  Remove File
+                                </button>
+                              </div>
+                            ) : (
+                              <>
+                                <Paperclip className="w-6 h-6 text-slate-600 mx-auto mb-2" />
+                                <p className="text-sm text-slate-500">Click to upload or drag and drop</p>
+                                <p className="text-[10px] text-slate-600 mt-1 uppercase tracking-widest">PDF or Image</p>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
