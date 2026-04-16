@@ -35,7 +35,6 @@ export function Footer() {
               <li><Link to="/about" className="hover:text-blue-400 transition-colors">About Us</Link></li>
               <li><Link to="/employers" className="hover:text-blue-400 transition-colors">For Employers</Link></li>
               <li><Link to="/applicants" className="hover:text-blue-400 transition-colors">For Applicants</Link></li>
-              <li><Link to="/success-stories" className="hover:text-blue-400 transition-colors">Success Stories</Link></li>
               <li><Link to="/contact" className="hover:text-blue-400 transition-colors">Contact Us</Link></li>
             </ul>
           </div>
@@ -57,15 +56,15 @@ export function Footer() {
             <ul className="space-y-4 text-sm">
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                <span>Padre Faura Center, 472 P. Faura St. corner M.H. Del Pilar, Ermita, Manila, Philippines</span>
+                <span>P12 Padre Faura Center, 472 Padre Faura Cor. M.H. Del Pilar, Ermita, Manila, Philippines</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>(+63) 02 5313 9446</span>
+                <span>+639244210970</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-blue-500 shrink-0" />
-                <span>pgima23@gmail.com</span>
+                <span>primegoallc@gmail.com</span>
               </li>
             </ul>
           </div>

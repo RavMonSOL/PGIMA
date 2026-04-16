@@ -8,7 +8,6 @@ const navLinks = [
   { name: 'About Us', path: '/about' },
   { name: 'For Employers', path: '/employers' },
   { name: 'For Applicants', path: '/applicants' },
-  { name: 'Success Stories', path: '/success-stories' },
   { name: 'Contact', path: '/contact' },
 ];
 

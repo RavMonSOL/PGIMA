@@ -32,8 +32,9 @@ export function Contact() {
                   <div>
                     <h3 className="text-lg font-bold text-white mb-1">Our Office</h3>
                     <p className="text-slate-400 leading-relaxed">
-                      Padre Faura Center,<br />
-                      472 P. Faura St. corner M.H. Del Pilar,<br />
+                      Prime Goal International Manpower Inc.,<br />
+                      P12 Padre Faura Center,<br />
+                      472 Padre Faura Cor. M.H. Del Pilar,<br />
                       Ermita, Manila, Philippines
                     </p>
                   </div>
@@ -46,7 +47,7 @@ export function Contact() {
                   <div>
                     <h3 className="text-lg font-bold text-white mb-1">Phone</h3>
                     <p className="text-slate-400">
-                      (+63) 02 5313 9446
+                      +639244210970
                     </p>
                   </div>
                 </div>
@@ -58,7 +59,7 @@ export function Contact() {
                   <div>
                     <h3 className="text-lg font-bold text-white mb-1">Email</h3>
                     <p className="text-slate-400">
-                      pgima23@gmail.com
+                      primegoallc@gmail.com
                     </p>
                   </div>
                 </div>
@@ -80,7 +81,7 @@ export function Contact() {
               {/* Map */}
               <div className="mt-12 w-full h-80 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden relative">
                 <iframe 
-                  src="https://maps.google.com/maps?q=Padre%20Faura%20Center,%20472%20P.%20Faura%20St,%20Ermita,%20Manila&t=&z=16&ie=UTF8&iwloc=&output=embed" 
+                  src="https://maps.google.com/maps?q=P12%20Padre%20Faura%20Center,%20472%20Padre%20Faura%20Cor.%20M.H.%20Del%20Pilar,%20Ermita,%20Manila,%20Philippines&t=&z=16&ie=UTF8&iwloc=&output=embed" 
                   width="100%" 
                   height="100%" 
                   style={{ border: 0 }} 
@@ -91,7 +92,7 @@ export function Contact() {
                   className="absolute inset-0 grayscale contrast-125 opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
                 ></iframe>
                 <a 
-                  href="https://maps.app.goo.gl/ZPV4bhWro6e1Rauq6" 
+                  href="https://maps.google.com/maps?q=P12%20Padre%20Faura%20Center,%20472%20Padre%20Faura%20Cor.%20M.H.%20Del%20Pilar,%20Ermita,%20Manila,%20Philippines" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="absolute bottom-4 left-4 bg-slate-950/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-800 flex items-center gap-2 hover:bg-blue-600 transition-colors group z-10"
@@ -114,7 +115,7 @@ export function Contact() {
                 
                 <div className="space-y-6">
                   <a 
-                    href="mailto:pgima23@gmail.com"
+                    href="mailto:primegoallc@gmail.com"
                     className="flex items-center gap-4 p-6 bg-slate-950 rounded-2xl border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 transition-all group"
                   >
                     <div className="w-14 h-14 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
@@ -122,7 +123,7 @@ export function Contact() {
                     </div>
                     <div className="flex-1">
                       <p className="text-sm text-slate-500 font-medium mb-1">Email us at</p>
-                      <p className="text-xl font-bold text-white">pgima23@gmail.com</p>
+                      <p className="text-xl font-bold text-white">primegoallc@gmail.com</p>
                     </div>
                     <ExternalLink className="w-5 h-5 text-slate-600 group-hover:text-blue-400 transition-colors" />
                   </a>
