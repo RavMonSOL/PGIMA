@@ -1,43 +1,7 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+import { MapPin, Phone, Mail, Clock, ExternalLink } from 'lucide-react';
 
 export function Contact() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONTACT;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-    if (!serviceId || !templateId || !publicKey) {
-      // Fallback for demo if keys aren't set yet
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        console.log("EmailJS keys not found. Form data:", new FormData(e.currentTarget));
-      }, 1500);
-      return;
-    }
-
-    try {
-      await emailjs.sendForm(serviceId, templateId, e.currentTarget, publicKey);
-      setIsSuccess(true);
-    } catch (err) {
-      console.error('EmailJS Error:', err);
-      setError('Failed to send message. Please try again later or email us directly.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="flex flex-col w-full">
       {/* Header */}
@@ -138,90 +102,48 @@ export function Contact() {
               </div>
             </div>
 
-            {/* Contact Form */}
-            <div className="bg-slate-900 p-8 md:p-10 rounded-3xl border border-slate-800 shadow-xl">
-              <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
-              
-              {isSuccess ? (
-                <motion.div 
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="flex flex-col items-center justify-center py-12 text-center"
-                >
-                  <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-6">
-                    <CheckCircle className="w-10 h-10" />
-                  </div>
-                  <h4 className="text-2xl font-bold text-white mb-2">Message Sent!</h4>
-                  <p className="text-slate-400">Thank you for reaching out. Our team will get back to you shortly.</p>
-                  <button 
-                    onClick={() => setIsSuccess(false)}
-                    className="mt-8 text-blue-400 hover:text-blue-300 font-medium"
+            {/* Direct Contact CTA */}
+            <div className="flex flex-col justify-center">
+              <div className="bg-slate-900 p-8 md:p-12 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 blur-3xl rounded-full -mr-16 -mt-16"></div>
+                
+                <h3 className="text-3xl font-bold text-white mb-6">Ready to start a conversation?</h3>
+                <p className="text-slate-400 text-lg mb-8 leading-relaxed">
+                  For the fastest response, please email us directly. Our team monitors our inbox during business hours and typically responds within 24 hours.
+                </p>
+                
+                <div className="space-y-6">
+                  <a 
+                    href="mailto:pgima23@gmail.com"
+                    className="flex items-center gap-4 p-6 bg-slate-950 rounded-2xl border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 transition-all group"
                   >
-                    Send another message
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-400">First Name</label>
-                      <input name="first_name" required type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Juan" />
+                    <div className="w-14 h-14 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
+                      <Mail className="w-7 h-7" />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-slate-400">Last Name</label>
-                      <input name="last_name" required type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Dela Cruz" />
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-500 font-medium mb-1">Email us at</p>
+                      <p className="text-xl font-bold text-white">pgima23@gmail.com</p>
                     </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Email Address</label>
-                    <input name="reply_to" required type="email" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="juan@example.com" />
-                  </div>
+                    <ExternalLink className="w-5 h-5 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                  </a>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Subject</label>
-                    <select name="subject" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none">
-                      <option>General Inquiry</option>
-                      <option>Job Application Status</option>
-                      <option>Employer Partnership</option>
-                      <option>Other</option>
-                    </select>
+                  <div className="p-6 bg-blue-600/5 rounded-2xl border border-blue-500/10">
+                    <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-blue-400" />
+                      Response Time
+                    </h4>
+                    <p className="text-slate-400 text-sm">
+                      We aim to respond to all general inquiries within 1-2 business days. For urgent manpower requirements, please call our office directly.
+                    </p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Message</label>
-                    <textarea name="message" required className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors h-32 resize-none" placeholder="How can we help you?"></textarea>
-                  </div>
+                </div>
 
-                  {error && (
-                    <p className="text-red-400 text-sm">{error}</p>
-                  )}
-                  
-                  <div className="pt-4">
-                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-lg mb-4">
-                      <p className="text-xs text-slate-400 leading-relaxed">
-                        <strong>Privacy Consent:</strong> By submitting this form or initiating a chat, you consent to the processing of your personal data by Prime Goal International Manpower Inc. in accordance with the Data Privacy Act of 2012 (RA 10173) for recruitment and employment purposes.
-                      </p>
-                    </div>
-                    <button 
-                      disabled={isSubmitting}
-                      type="submit" 
-                      className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="w-5 h-5 animate-spin" />
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" /> Send Message
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
+                <div className="mt-10 pt-10 border-t border-slate-800">
+                  <p className="text-xs text-slate-500 leading-relaxed italic">
+                    <strong>Note:</strong> Job applicants are encouraged to apply directly through our <a href="/applicants" className="text-blue-400 hover:underline">Current Openings</a> page for faster processing of their applications.
+                  </p>
+                </div>
+              </div>
             </div>
 
           </div>
