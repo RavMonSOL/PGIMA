@@ -63,11 +63,12 @@ export function Applicants() {
     e.preventDefault();
     if (!selectedJob) return;
     
+    const form = e.currentTarget;
     setIsSubmitting(true);
     setFormError(null);
 
-    if (selectedFile && selectedFile.size > 500 * 1024) {
-      setFormError('File is too large. Please keep it under 500KB.');
+    if (selectedFile && selectedFile.size > 200 * 1024) {
+      setFormError('File is too large for the free tier. Please keep it under 200KB.');
       setIsSubmitting(false);
       return;
     }
@@ -80,12 +81,13 @@ export function Applicants() {
       setTimeout(() => {
         setIsSubmitting(false);
         setIsSuccess(true);
+        console.log("EmailJS keys not found. Form data:", new FormData(form));
       }, 1500);
       return;
     }
 
     try {
-      await emailjs.sendForm(serviceId, templateId, e.currentTarget, publicKey);
+      await emailjs.sendForm(serviceId, templateId, form, publicKey);
       setIsSuccess(true);
     } catch (err) {
       console.error('EmailJS Error:', err);

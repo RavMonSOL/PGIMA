@@ -10,6 +10,7 @@ export function Employers() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
     setIsSubmitting(true);
     setError(null);
 
@@ -22,13 +23,13 @@ export function Employers() {
       setTimeout(() => {
         setIsSubmitting(false);
         setIsSuccess(true);
-        console.log("EmailJS keys not found. Form data:", new FormData(e.currentTarget));
+        console.log("EmailJS keys not found. Form data:", new FormData(form));
       }, 1500);
       return;
     }
 
     try {
-      await emailjs.sendForm(serviceId, templateId, e.currentTarget, publicKey);
+      await emailjs.sendForm(serviceId, templateId, form, publicKey);
       setIsSuccess(true);
     } catch (err) {
       console.error('EmailJS Error:', err);
