@@ -66,7 +66,7 @@ export function Applicants() {
     setFormError(null);
 
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     if (!serviceId || !templateId || !publicKey) {
