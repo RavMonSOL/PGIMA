@@ -65,65 +65,34 @@ export function Applicants() {
     if (!selectedJob) return;
     
     const form = e.currentTarget;
-    const formData = new FormData(form);
     setIsSubmitting(true);
     setFormError(null);
 
-    // 1MB limit for Firebase Storage (more generous than EmailJS)
-    if (selectedFile && selectedFile.size > 1024 * 1024) {
-      setFormError('File is too large. Please keep it under 1MB.');
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
-      let resumeUrl = '';
-      
-      // 1. Upload to Firebase Storage if file exists
-      if (selectedFile) {
-        const firstName = formData.get('first_name') as string;
-        const lastName = formData.get('last_name') as string;
-        const timestamp = Date.now();
-        const safeFileName = selectedFile.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
-        const storagePath = `applications/${firstName}_${lastName}_${timestamp}_${safeFileName}`;
-        const storageRef = ref(storage, storagePath);
-        
-        const uploadResult = await uploadBytes(storageRef, selectedFile);
-        resumeUrl = await getDownloadURL(uploadResult.ref);
-      }
-
-      // 2. Save to Firestore
+      // 1. Save to Firestore
+      const formData = new FormData(form);
       const applicationData = {
         jobTitle: selectedJob.title,
         firstName: formData.get('first_name'),
         lastName: formData.get('last_name'),
         email: formData.get('reply_to'),
         phone: formData.get('contact_number'),
-        resumeUrl: resumeUrl,
+        resumeUrl: 'Pending Google Form',
         status: 'new',
         createdAt: Timestamp.now()
       };
 
       await addDoc(collection(db, 'applications'), applicationData);
 
-      // 3. Send EmailJS notification (WITHOUT attachment to avoid 413)
+      // 2. Send EmailJS notification
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
       if (serviceId && templateId && publicKey) {
-        // We create a new object for EmailJS that includes the resume link
-        // but DOES NOT include the file input itself
-        const emailParams = {
-          job_title: selectedJob.title,
-          first_name: formData.get('first_name'),
-          last_name: formData.get('last_name'),
-          reply_to: formData.get('reply_to'),
-          contact_number: formData.get('contact_number'),
-          resume_link: resumeUrl, // Pass the link instead of the file
-        };
-
-        await emailjs.send(serviceId, templateId, emailParams, publicKey);
+        await emailjs.sendForm(serviceId, templateId, form, publicKey);
+      } else {
+        console.warn("EmailJS keys not found. Form data:", formData);
       }
 
       setIsSuccess(true);
@@ -134,6 +103,9 @@ export function Applicants() {
       setIsSubmitting(false);
     }
   };
+
+  // Replace this with your actual Google Form link
+  const GOOGLE_FORM_LINK = "https://forms.gle/a5KakuAv9xQY4Xm39";
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-slate-950">
@@ -281,8 +253,22 @@ export function Applicants() {
                     <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6">
                       <CheckCircle className="w-10 h-10" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Application Sent!</h3>
-                    <p className="text-slate-400 mb-8">Your application for <strong>{selectedJob.title}</strong> has been received. Our recruitment team will review your profile shortly.</p>
+                    <h3 className="text-2xl font-bold text-white mb-2">Step 1 Complete!</h3>
+                    <p className="text-slate-400 mb-6">Your basic information for <strong>{selectedJob.title}</strong> has been saved.</p>
+                    
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-6 mb-8">
+                      <h4 className="text-lg font-bold text-blue-400 mb-2">Step 2: Upload Resume</h4>
+                      <p className="text-sm text-slate-300 mb-4">To complete your application, please upload your resume using our secure Google Form.</p>
+                      <a 
+                        href={GOOGLE_FORM_LINK} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-block bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition-all"
+                      >
+                        Upload Resume Now
+                      </a>
+                    </div>
+
                     <button 
                       onClick={() => {
                         setIsApplying(false);
@@ -324,51 +310,6 @@ export function Applicants() {
                         <input name="contact_number" required type="tel" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all" placeholder="+63 9XX XXX XXXX" />
                       </div>
 
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Resume / CV (PDF or Image)</label>
-                        <div className="relative group">
-                          <input 
-                            name="resume" 
-                            required 
-                            type="file" 
-                            accept=".pdf,image/*"
-                            onChange={(e) => {
-                              if (e.target.files && e.target.files[0]) {
-                                setSelectedFile(e.target.files[0]);
-                              }
-                            }}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
-                          />
-                          <div className={`w-full bg-slate-950 border border-dashed rounded-xl px-4 py-6 text-center transition-all ${selectedFile ? 'border-blue-500 bg-blue-500/5' : 'border-slate-800 group-hover:border-slate-700'}`}>
-                            {selectedFile ? (
-                              <div className="flex flex-col items-center">
-                                <CheckCircle className="w-6 h-6 text-blue-500 mb-2" />
-                                <p className="text-sm text-white font-medium truncate max-w-full px-4">{selectedFile.name}</p>
-                                <p className="text-xs text-slate-500 mt-1">{(selectedFile.size / 1024).toFixed(1)} KB</p>
-                                <button 
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    setSelectedFile(null);
-                                    const input = document.querySelector('input[name="resume"]') as HTMLInputElement;
-                                    if (input) input.value = '';
-                                  }}
-                                  className="mt-3 text-xs text-red-400 hover:text-red-300 font-bold uppercase tracking-tighter relative z-20"
-                                >
-                                  Remove File
-                                </button>
-                              </div>
-                            ) : (
-                              <>
-                                <Paperclip className="w-6 h-6 text-slate-600 mx-auto mb-2" />
-                                <p className="text-sm text-slate-500">Click to upload or drag and drop</p>
-                                <p className="text-[10px] text-slate-600 mt-1 uppercase tracking-widest">PDF or Image</p>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
                       {formError && (
                         <p className="text-red-400 text-sm">{formError}</p>
                       )}
@@ -381,11 +322,11 @@ export function Applicants() {
                         {isSubmitting ? (
                           <>
                             <Loader2 className="w-5 h-5 animate-spin" />
-                            Sending Application...
+                            Saving Application...
                           </>
                         ) : (
                           <>
-                            <Send className="w-5 h-5" /> Submit Application
+                            <Send className="w-5 h-5" /> Continue to Resume Upload
                           </>
                         )}
                       </button>

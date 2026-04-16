@@ -4,7 +4,7 @@ import { collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, order
 import { signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { useAuth } from '../lib/AuthContext';
-import { Plus, Pencil, Trash2, LogIn, LogOut, Loader2, Briefcase, MapPin, Tag, CheckCircle2, XCircle, FileText, Mail, Phone, Calendar, ExternalLink } from 'lucide-react';
+import { Plus, Pencil, Trash2, LogIn, LogOut, Loader2, Briefcase, MapPin, Tag, CheckCircle2, XCircle, FileText, Mail, Phone, Calendar, ExternalLink, Search } from 'lucide-react';
 
 interface Job {
   id: string;
@@ -34,6 +34,7 @@ interface Application {
 export function AdminDashboard() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'jobs' | 'applications'>('jobs');
+  const [appSearchTerm, setAppSearchTerm] = useState('');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
@@ -164,6 +165,15 @@ export function AdminDashboard() {
       handleFirestoreError(error, OperationType.UPDATE, `applications/${id}`);
     }
   };
+
+  const filteredApplications = applications.filter(app => {
+    const searchLower = appSearchTerm.toLowerCase();
+    const fullName = `${app.firstName} ${app.lastName}`.toLowerCase();
+    return fullName.includes(searchLower) || 
+           app.email.toLowerCase().includes(searchLower) || 
+           app.jobTitle.toLowerCase().includes(searchLower) ||
+           app.phone.includes(searchLower);
+  });
 
   if (authLoading) {
     return (
@@ -431,17 +441,28 @@ export function AdminDashboard() {
           </div>
         ) : (
           <div className="space-y-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
+              <input 
+                type="text" 
+                placeholder="Search applicants by name, email, phone, or job title..."
+                className="w-full bg-slate-900 border border-slate-800 rounded-xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 transition-colors shadow-lg"
+                value={appSearchTerm}
+                onChange={(e) => setAppSearchTerm(e.target.value)}
+              />
+            </div>
+
             {loading ? (
               <div className="flex justify-center py-20">
                 <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
               </div>
-            ) : applications.length === 0 ? (
+            ) : filteredApplications.length === 0 ? (
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-20 text-center">
-                <p className="text-slate-500">No applications received yet.</p>
+                <p className="text-slate-500">No applications found matching your search.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
-                {applications.map(app => (
+                {filteredApplications.map(app => (
                   <div key={app.id} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl hover:border-slate-700 transition-all group">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="flex-1">
@@ -478,14 +499,20 @@ export function AdminDashboard() {
                       </div>
 
                       <div className="flex items-center gap-3">
-                        <a 
-                          href={app.resumeUrl} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 px-4 py-2 rounded-xl border border-blue-500/20 transition-all text-sm font-bold"
-                        >
-                          <FileText className="w-4 h-4" /> Resume <ExternalLink className="w-3 h-3" />
-                        </a>
+                        {app.resumeUrl && app.resumeUrl.startsWith('http') ? (
+                          <a 
+                            href={app.resumeUrl} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 px-4 py-2 rounded-xl border border-blue-500/20 transition-all text-sm font-bold"
+                          >
+                            <FileText className="w-4 h-4" /> Resume <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : (
+                          <span className="flex items-center gap-2 bg-slate-800 text-slate-400 px-4 py-2 rounded-xl border border-slate-700 text-sm font-bold">
+                            <FileText className="w-4 h-4" /> Via Google Form
+                          </span>
+                        )}
                         
                         <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
                           <select 
