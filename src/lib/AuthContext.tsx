@@ -20,38 +20,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      
-      if (currentUser) {
-        const isDefaultAdmin = currentUser.email === 'agent47sui@gmail.com';
+      try {
+        setUser(currentUser);
         
-        // Check if user exists in Firestore, if not create a basic profile
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDoc = await getDoc(userDocRef);
-        
-        if (!userDoc.exists()) {
-          await setDoc(userDocRef, {
-            email: currentUser.email,
-            role: isDefaultAdmin ? 'admin' : 'user',
-            displayName: currentUser.displayName || '',
-            createdAt: new Date()
-          });
-          setIsAdmin(isDefaultAdmin);
-        } else {
-          const userData = userDoc.data();
-          // If it's the default admin but role is wrong in DB, fix it
-          if (isDefaultAdmin && userData?.role !== 'admin') {
-            await setDoc(userDocRef, { ...userData, role: 'admin' }, { merge: true });
-            setIsAdmin(true);
+        if (currentUser) {
+          const isDefaultAdmin = currentUser.email === 'agent47sui@gmail.com';
+          
+          // Check if user exists in Firestore, if not create a basic profile
+          const userDocRef = doc(db, 'users', currentUser.uid);
+          const userDoc = await getDoc(userDocRef);
+          
+          if (!userDoc.exists()) {
+            await setDoc(userDocRef, {
+              email: currentUser.email,
+              role: isDefaultAdmin ? 'admin' : 'user',
+              displayName: currentUser.displayName || '',
+              createdAt: new Date()
+            });
+            setIsAdmin(isDefaultAdmin);
           } else {
-            setIsAdmin(userData?.role === 'admin' || isDefaultAdmin);
+            const userData = userDoc.data();
+            // If it's the default admin but role is wrong in DB, fix it
+            if (isDefaultAdmin && userData?.role !== 'admin') {
+              await setDoc(userDocRef, { ...userData, role: 'admin' }, { merge: true });
+              setIsAdmin(true);
+            } else {
+              setIsAdmin(userData?.role === 'admin' || isDefaultAdmin);
+            }
           }
+        } else {
+          setIsAdmin(false);
         }
-      } else {
-        setIsAdmin(false);
+      } catch (error) {
+        console.error("Auth initialization error:", error);
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     });
 
     return () => unsubscribe();
