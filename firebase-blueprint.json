@@ -1,0 +1,42 @@
+{
+  "entities": {
+    "Job": {
+      "title": "Job Posting",
+      "description": "A job opening posted by the management",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Job title" },
+        "location": { "type": "string", "description": "Job location (e.g. Saudi Arabia)" },
+        "category": { "type": "string", "description": "Job category (e.g. Healthcare)" },
+        "description": { "type": "string", "description": "Detailed job description" },
+        "requirements": { "type": "string", "description": "Job requirements" },
+        "salary": { "type": "string", "description": "Salary range or info" },
+        "status": { "type": "string", "enum": ["open", "closed"], "description": "Current status of the job" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "location", "category", "status"]
+    },
+    "User": {
+      "title": "User Profile",
+      "description": "User profile with role information",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "user"] },
+        "displayName": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/jobs/{jobId}": {
+      "schema": "Job",
+      "description": "Collection of job postings"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Collection of user profiles"
+    }
+  }
+}
