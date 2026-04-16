@@ -78,6 +78,12 @@ service cloud.firestore {
     // Rules
     // ===============================================================
 
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && request.resource.data.keys().hasAll(['name']) && request.resource.data.name is string && request.resource.data.name.size() > 0;
+      allow delete: if isAdmin();
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
       allow create: if isAuthenticated() && isOwner(userId) && isValidUser(request.resource.data) && 

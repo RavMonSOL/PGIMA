@@ -31,12 +31,19 @@ interface Application {
   createdAt: any;
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 export function AdminDashboard() {
   const { user, isAdmin, loading: authLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'jobs' | 'applications'>('jobs');
+  const [activeTab, setActiveTab] = useState<'jobs' | 'applications' | 'categories'>('jobs');
   const [appSearchTerm, setAppSearchTerm] = useState('');
   const [jobs, setJobs] = useState<Job[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategoryName, setNewCategoryName] = useState('');
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [currentJob, setCurrentJob] = useState<Partial<Job>>({
@@ -76,9 +83,22 @@ export function AdminDashboard() {
       handleFirestoreError(error, OperationType.LIST, 'applications');
     });
 
+    const categoriesQuery = query(collection(db, 'categories'), orderBy('name', 'asc'));
+    const unsubscribeCategories = onSnapshot(categoriesQuery, (snapshot) => {
+      const catsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Category[];
+      setCategories(catsData);
+      if (activeTab === 'categories') setLoading(false);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'categories');
+    });
+
     return () => {
       unsubscribeJobs();
       unsubscribeApps();
+      unsubscribeCategories();
     };
   }, [isAdmin, activeTab]);
 
@@ -154,6 +174,26 @@ export function AdminDashboard() {
       await deleteDoc(doc(db, 'applications', id));
     } catch (error) {
       handleFirestoreError(error, OperationType.DELETE, `applications/${id}`);
+    }
+  };
+
+  const handleAddCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isAdmin || !newCategoryName.trim()) return;
+    try {
+      await addDoc(collection(db, 'categories'), { name: newCategoryName.trim() });
+      setNewCategoryName('');
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'categories');
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!isAdmin || !window.confirm('Are you sure you want to delete this category?')) return;
+    try {
+      await deleteDoc(doc(db, 'categories', id));
+    } catch (error) {
+      handleFirestoreError(error, OperationType.DELETE, `categories/${id}`);
     }
   };
 
@@ -267,6 +307,13 @@ export function AdminDashboard() {
             )}
             {activeTab === 'applications' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />}
           </button>
+          <button 
+            onClick={() => { setActiveTab('categories'); setLoading(true); }}
+            className={`pb-4 px-2 font-bold transition-all relative ${activeTab === 'categories' ? 'text-blue-500' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            Categories
+            {activeTab === 'categories' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500" />}
+          </button>
         </div>
 
         {activeTab === 'jobs' ? (
@@ -311,10 +358,9 @@ export function AdminDashboard() {
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all appearance-none"
                       >
                         <option value="">Select...</option>
-                        <option value="Nanny">Nanny</option>
-                        <option value="Cook">Cook</option>
-                        <option value="Lady Driver">Lady Driver</option>
-                        <option value="Domestic Helper">Domestic Helper</option>
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.name}>{cat.name}</option>
+                        ))}
                       </select>
                     </div>
                   </div>
@@ -439,7 +485,7 @@ export function AdminDashboard() {
               )}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'applications' ? (
           <div className="space-y-6">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5" />
@@ -540,7 +586,62 @@ export function AdminDashboard() {
               </div>
             )}
           </div>
-        )}
+        ) : activeTab === 'categories' ? (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="lg:col-span-1">
+              <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 sticky top-24 shadow-xl">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                  <Plus className="w-5 h-5 text-blue-500" />
+                  Add Category
+                </h2>
+                <form onSubmit={handleAddCategory} className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">Category Name</label>
+                    <input 
+                      required 
+                      value={newCategoryName}
+                      onChange={e => setNewCategoryName(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-all" 
+                      placeholder="e.g. Healthcare" 
+                    />
+                  </div>
+                  <button 
+                    type="submit"
+                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-blue-600/20"
+                  >
+                    Add Category
+                  </button>
+                </form>
+              </div>
+            </div>
+            <div className="lg:col-span-2">
+              {loading ? (
+                <div className="flex justify-center py-20">
+                  <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                </div>
+              ) : categories.length === 0 ? (
+                <div className="bg-slate-900 border border-slate-800 rounded-3xl p-20 text-center">
+                  <p className="text-slate-500">No categories found. Add one to get started.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {categories.map(cat => (
+                    <div key={cat.id} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl flex items-center justify-between group hover:border-slate-700 transition-all">
+                      <span className="text-white font-bold">{cat.name}</span>
+                      <button 
+                        onClick={() => handleDeleteCategory(cat.id)}
+                        className="p-2 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

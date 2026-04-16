@@ -17,8 +17,14 @@ interface Job {
   status: 'open' | 'closed';
 }
 
+interface Category {
+  id: string;
+  name: string;
+}
+
 export function Applicants() {
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -37,7 +43,7 @@ export function Applicants() {
       orderBy('createdAt', 'desc')
     );
     
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribeJobs = onSnapshot(q, (snapshot) => {
       const jobsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -48,10 +54,24 @@ export function Applicants() {
       handleFirestoreError(error, OperationType.LIST, 'jobs');
     });
 
-    return () => unsubscribe();
+    const categoriesQuery = query(collection(db, 'categories'), orderBy('name', 'asc'));
+    const unsubscribeCategories = onSnapshot(categoriesQuery, (snapshot) => {
+      const catsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Category[];
+      setCategories(catsData);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'categories');
+    });
+
+    return () => {
+      unsubscribeJobs();
+      unsubscribeCategories();
+    };
   }, []);
 
-  const categories = ["All", "Nanny", "Cook", "Lady Driver", "Domestic Helper"];
+  const filterCategories = ["All", ...categories.map(c => c.name)];
 
   const filteredJobs = jobs.filter(job => {
     const matchesSearch = job.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -126,7 +146,7 @@ export function Applicants() {
             </div>
             <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 no-scrollbar">
               <Filter className="text-slate-500 w-5 h-5 shrink-0" />
-              {categories.map((cat) => (
+              {filterCategories.map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}

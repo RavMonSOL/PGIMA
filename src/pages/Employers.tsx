@@ -15,16 +15,15 @@ export function Employers() {
     setError(null);
 
     const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONSULTATION;
+    // Try consultation template first, fallback to application template, then generic template
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_CONSULTATION || 
+                       import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION || 
+                       import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
     const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     if (!serviceId || !templateId || !publicKey) {
-      // Fallback for demo if keys aren't set yet
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        console.log("EmailJS keys not found. Form data:", new FormData(form));
-      }, 1500);
+      setError("EmailJS configuration is missing. Please ensure your EmailJS secrets are set in the AI Studio settings.");
+      setIsSubmitting(false);
       return;
     }
 
