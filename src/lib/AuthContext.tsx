@@ -26,27 +26,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (currentUser) {
           const isDefaultAdmin = currentUser.email === 'agent47sui@gmail.com';
           
-          // Check if user exists in Firestore, if not create a basic profile
-          const userDocRef = doc(db, 'users', currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
-          
-          if (!userDoc.exists()) {
-            await setDoc(userDocRef, {
-              email: currentUser.email,
-              role: isDefaultAdmin ? 'admin' : 'user',
-              displayName: currentUser.displayName || '',
-              createdAt: new Date()
-            });
-            setIsAdmin(isDefaultAdmin);
-          } else {
-            const userData = userDoc.data();
-            // If it's the default admin but role is wrong in DB, fix it
-            if (isDefaultAdmin && userData?.role !== 'admin') {
-              await setDoc(userDocRef, { ...userData, role: 'admin' }, { merge: true });
-              setIsAdmin(true);
+          // Optimistically set admin status for the default admin
+          if (isDefaultAdmin) {
+            setIsAdmin(true);
+          }
+
+          try {
+            // Check if user exists in Firestore, if not create a basic profile
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userDocRef);
+            
+            if (!userDoc.exists()) {
+              await setDoc(userDocRef, {
+                email: currentUser.email,
+                role: isDefaultAdmin ? 'admin' : 'user',
+                displayName: currentUser.displayName || '',
+                createdAt: new Date()
+              });
+              setIsAdmin(isDefaultAdmin);
             } else {
-              setIsAdmin(userData?.role === 'admin' || isDefaultAdmin);
+              const userData = userDoc.data();
+              // If it's the default admin but role is wrong in DB, fix it
+              if (isDefaultAdmin && userData?.role !== 'admin') {
+                await setDoc(userDocRef, { ...userData, role: 'admin' }, { merge: true });
+                setIsAdmin(true);
+              } else {
+                setIsAdmin(userData?.role === 'admin' || isDefaultAdmin);
+              }
             }
+          } catch (error) {
+            console.error("Firestore user sync error:", error);
+            // If it's the default admin, we already set isAdmin(true) above, 
+            // so they can still access the dashboard even if Firestore is being difficult.
           }
         } else {
           setIsAdmin(false);
