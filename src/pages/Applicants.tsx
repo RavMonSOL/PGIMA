@@ -130,6 +130,34 @@ export function Applicants() {
         </div>
       </section>
 
+      {/* Benefits Section */}
+      <section className="py-12 bg-slate-950 border-b border-slate-900">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-2">Benefits of Applying With Us</h2>
+            <p className="text-slate-400">We take care of our applicants every step of the way.</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: <CheckCircle className="w-6 h-6 text-emerald-400" />, title: "Free Passporting" },
+              { icon: <CheckCircle className="w-6 h-6 text-emerald-400" />, title: "Free Training", subtitle: "(TESDA NC2)" },
+              { icon: <CheckCircle className="w-6 h-6 text-emerald-400" />, title: "Free Accommodation" },
+              { icon: <CheckCircle className="w-6 h-6 text-emerald-400" />, title: "Free Medical" }
+            ].map((benefit, i) => (
+              <div key={i} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex items-center gap-4 hover:border-emerald-500/30 transition-colors">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  {benefit.icon}
+                </div>
+                <div>
+                  <h3 className="text-white font-bold">{benefit.title}</h3>
+                  {benefit.subtitle && <p className="text-sm text-slate-400">{benefit.subtitle}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Search & Filter */}
       <section className="py-12 border-b border-slate-900">
         <div className="container mx-auto px-4 md:px-6">
