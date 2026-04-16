@@ -62,6 +62,18 @@ service cloud.firestore {
              data.role in ['admin', 'user'];
     }
 
+    function isValidApplication(data) {
+      return data.keys().hasAll(['jobTitle', 'firstName', 'lastName', 'email', 'phone', 'resumeUrl', 'status', 'createdAt']) &&
+             data.jobTitle is string &&
+             data.firstName is string &&
+             data.lastName is string &&
+             data.email is string &&
+             data.phone is string &&
+             data.resumeUrl is string &&
+             data.status in ['new', 'reviewed', 'rejected', 'hired'] &&
+             data.createdAt is timestamp;
+    }
+
     // ===============================================================
     // Rules
     // ===============================================================
@@ -77,6 +89,13 @@ service cloud.firestore {
       allow read: if true; // Public can see jobs
       allow create: if isAdmin() && isValidJob(request.resource.data);
       allow update: if isAdmin() && isValidJob(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    match /applications/{applicationId} {
+      allow read: if isAdmin();
+      allow create: if isValidApplication(request.resource.data);
+      allow update: if isAdmin() && isValidApplication(request.resource.data);
       allow delete: if isAdmin();
     }
   }

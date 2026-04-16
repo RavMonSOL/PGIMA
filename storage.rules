@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /applications/{allPaths=**} {
+      // Allow public uploads but no listing
+      allow write: if request.resource.size < 2 * 1024 * 1024 // 2MB limit
+                   && request.resource.contentType.matches('application/pdf|image/.*');
+      // Allow admins to read
+      allow read: if true; // For now public read to make links work easily, but in production should be restricted
+    }
+  }
+}

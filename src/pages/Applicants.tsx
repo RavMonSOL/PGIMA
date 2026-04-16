@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Briefcase, Filter, ArrowRight, Loader2, X, Send, Paperclip, CheckCircle } from 'lucide-react';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
-import { db, handleFirestoreError, OperationType } from '../lib/firebase';
+import { collection, query, where, onSnapshot, orderBy, addDoc, Timestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage, handleFirestoreError, OperationType } from '../lib/firebase';
 import emailjs from '@emailjs/browser';
 
 interface Job {
@@ -64,34 +65,71 @@ export function Applicants() {
     if (!selectedJob) return;
     
     const form = e.currentTarget;
+    const formData = new FormData(form);
     setIsSubmitting(true);
     setFormError(null);
 
-    if (selectedFile && selectedFile.size > 200 * 1024) {
-      setFormError('File is too large for the free tier. Please keep it under 200KB.');
+    // 1MB limit for Firebase Storage (more generous than EmailJS)
+    if (selectedFile && selectedFile.size > 1024 * 1024) {
+      setFormError('File is too large. Please keep it under 1MB.');
       setIsSubmitting(false);
       return;
     }
 
-    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
-    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-    if (!serviceId || !templateId || !publicKey) {
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        console.log("EmailJS keys not found. Form data:", new FormData(form));
-      }, 1500);
-      return;
-    }
-
     try {
-      await emailjs.sendForm(serviceId, templateId, form, publicKey);
+      let resumeUrl = '';
+      
+      // 1. Upload to Firebase Storage if file exists
+      if (selectedFile) {
+        const firstName = formData.get('first_name') as string;
+        const lastName = formData.get('last_name') as string;
+        const timestamp = Date.now();
+        const safeFileName = selectedFile.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+        const storagePath = `applications/${firstName}_${lastName}_${timestamp}_${safeFileName}`;
+        const storageRef = ref(storage, storagePath);
+        
+        const uploadResult = await uploadBytes(storageRef, selectedFile);
+        resumeUrl = await getDownloadURL(uploadResult.ref);
+      }
+
+      // 2. Save to Firestore
+      const applicationData = {
+        jobTitle: selectedJob.title,
+        firstName: formData.get('first_name'),
+        lastName: formData.get('last_name'),
+        email: formData.get('reply_to'),
+        phone: formData.get('contact_number'),
+        resumeUrl: resumeUrl,
+        status: 'new',
+        createdAt: Timestamp.now()
+      };
+
+      await addDoc(collection(db, 'applications'), applicationData);
+
+      // 3. Send EmailJS notification (WITHOUT attachment to avoid 413)
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (serviceId && templateId && publicKey) {
+        // We create a new object for EmailJS that includes the resume link
+        // but DOES NOT include the file input itself
+        const emailParams = {
+          job_title: selectedJob.title,
+          first_name: formData.get('first_name'),
+          last_name: formData.get('last_name'),
+          reply_to: formData.get('reply_to'),
+          contact_number: formData.get('contact_number'),
+          resume_link: resumeUrl, // Pass the link instead of the file
+        };
+
+        await emailjs.send(serviceId, templateId, emailParams, publicKey);
+      }
+
       setIsSuccess(true);
     } catch (err) {
-      console.error('EmailJS Error:', err);
-      setFormError('Failed to send application. Please try again later.');
+      console.error('Application Error:', err);
+      setFormError('Failed to submit application. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }

@@ -27,6 +27,22 @@
         "displayName": { "type": "string" }
       },
       "required": ["email", "role"]
+    },
+    "Application": {
+      "title": "Job Application",
+      "description": "An application submitted by a candidate",
+      "type": "object",
+      "properties": {
+        "jobTitle": { "type": "string" },
+        "firstName": { "type": "string" },
+        "lastName": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "resumeUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "reviewed", "rejected", "hired"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["jobTitle", "firstName", "lastName", "email", "phone", "resumeUrl", "status", "createdAt"]
     }
   },
   "firestore": {
@@ -37,6 +53,10 @@
     "/users/{userId}": {
       "schema": "User",
       "description": "Collection of user profiles"
+    },
+    "/applications/{applicationId}": {
+      "schema": "Application",
+      "description": "Collection of job applications"
     }
   }
 }
