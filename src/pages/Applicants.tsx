@@ -69,7 +69,7 @@ export function Applicants() {
     setFormError(null);
 
     try {
-      // 1. Save to Firestore
+      // Save to Firestore
       const formData = new FormData(form);
       const applicationData = {
         jobTitle: selectedJob.title,
@@ -83,17 +83,6 @@ export function Applicants() {
       };
 
       await addDoc(collection(db, 'applications'), applicationData);
-
-      // 2. Send EmailJS notification
-      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID_APPLICATION;
-      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-
-      if (serviceId && templateId && publicKey) {
-        await emailjs.sendForm(serviceId, templateId, form, publicKey);
-      } else {
-        console.warn("EmailJS keys not found. Form data:", formData);
-      }
 
       setIsSuccess(true);
     } catch (err) {
