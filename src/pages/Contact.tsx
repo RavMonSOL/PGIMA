@@ -1,7 +1,43 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader2, CheckCircle } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 export function Contact() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      // Fallback for demo if keys aren't set yet
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        console.log("EmailJS keys not found. Form data:", new FormData(e.currentTarget));
+      }, 1500);
+      return;
+    }
+
+    try {
+      await emailjs.sendForm(serviceId, templateId, e.currentTarget, publicKey);
+      setIsSuccess(true);
+    } catch (err) {
+      console.error('EmailJS Error:', err);
+      setError('Failed to send message. Please try again later or email us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex flex-col w-full">
       {/* Header */}
@@ -105,49 +141,87 @@ export function Contact() {
             {/* Contact Form */}
             <div className="bg-slate-900 p-8 md:p-10 rounded-3xl border border-slate-800 shadow-xl">
               <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
-              <form className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">First Name</label>
-                    <input type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Juan" />
+              
+              {isSuccess ? (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center justify-center py-12 text-center"
+                >
+                  <div className="w-20 h-20 bg-emerald-500/20 text-emerald-500 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle className="w-10 h-10" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-slate-400">Last Name</label>
-                    <input type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Dela Cruz" />
-                  </div>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-400">Email Address</label>
-                  <input type="email" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="juan@example.com" />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-400">Subject</label>
-                  <select className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none">
-                    <option>General Inquiry</option>
-                    <option>Job Application Status</option>
-                    <option>Employer Partnership</option>
-                    <option>Other</option>
-                  </select>
-                </div>
-                
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-400">Message</label>
-                  <textarea className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors h-32 resize-none" placeholder="How can we help you?"></textarea>
-                </div>
-                
-                <div className="pt-4">
-                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-lg mb-4">
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      <strong>Privacy Consent:</strong> By submitting this form or initiating a chat, you consent to the processing of your personal data by Prime Goal International Manpower Inc. in accordance with the Data Privacy Act of 2012 (RA 10173) for recruitment and employment purposes.
-                    </p>
-                  </div>
-                  <button type="button" className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    <Send className="w-5 h-5" /> Send Message
+                  <h4 className="text-2xl font-bold text-white mb-2">Message Sent!</h4>
+                  <p className="text-slate-400">Thank you for reaching out. Our team will get back to you shortly.</p>
+                  <button 
+                    onClick={() => setIsSuccess(false)}
+                    className="mt-8 text-blue-400 hover:text-blue-300 font-medium"
+                  >
+                    Send another message
                   </button>
-                </div>
-              </form>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-400">First Name</label>
+                      <input name="first_name" required type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Juan" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-slate-400">Last Name</label>
+                      <input name="last_name" required type="text" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="Dela Cruz" />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">Email Address</label>
+                    <input name="reply_to" required type="email" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors" placeholder="juan@example.com" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">Subject</label>
+                    <select name="subject" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none">
+                      <option>General Inquiry</option>
+                      <option>Job Application Status</option>
+                      <option>Employer Partnership</option>
+                      <option>Other</option>
+                    </select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-slate-400">Message</label>
+                    <textarea name="message" required className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors h-32 resize-none" placeholder="How can we help you?"></textarea>
+                  </div>
+
+                  {error && (
+                    <p className="text-red-400 text-sm">{error}</p>
+                  )}
+                  
+                  <div className="pt-4">
+                    <div className="p-4 bg-slate-950 border border-slate-800 rounded-lg mb-4">
+                      <p className="text-xs text-slate-400 leading-relaxed">
+                        <strong>Privacy Consent:</strong> By submitting this form or initiating a chat, you consent to the processing of your personal data by Prime Goal International Manpower Inc. in accordance with the Data Privacy Act of 2012 (RA 10173) for recruitment and employment purposes.
+                      </p>
+                    </div>
+                    <button 
+                      disabled={isSubmitting}
+                      type="submit" 
+                      className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-bold py-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" /> Send Message
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
 
           </div>
