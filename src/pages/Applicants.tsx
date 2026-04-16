@@ -73,10 +73,10 @@ export function Applicants() {
       const formData = new FormData(form);
       const applicationData = {
         jobTitle: selectedJob.title,
-        firstName: formData.get('first_name'),
-        lastName: formData.get('last_name'),
-        email: formData.get('reply_to'),
-        phone: formData.get('contact_number'),
+        firstName: (formData.get('first_name') as string) || '',
+        lastName: (formData.get('last_name') as string) || '',
+        email: (formData.get('reply_to') as string) || '',
+        phone: (formData.get('contact_number') as string) || '',
         resumeUrl: 'Pending Google Form',
         status: 'new',
         createdAt: Timestamp.now()
